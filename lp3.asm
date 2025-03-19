@@ -1,4 +1,6 @@
 data segment
+    temp dw 0
+    tmp10 db 10
     len equ 400 
     msg db " sot. tys. jitelei$"
     msg21 db "Strana: $"
@@ -10,7 +12,7 @@ data segment
     text3 db "Vvedite 3, chtoby otobraziti ishodnye dannye$"
     text4 db "Vvedite 4, chtoby otobraziti dannye soglasno variantu$"
     strany db len dup(?)
-    nasel dw 40 dup(?)
+    naselenie dw 40 dup(?)
     s1 db "Moldova"
     s2 db "Ucraine"
     s3 db "Russia"
@@ -58,6 +60,7 @@ menu1 proc
     lea dx, text
     mov ah, 9
     int 21h
+
 ;vvod colicestva stran    
     mov ah, 01h
     int 21h
@@ -72,9 +75,11 @@ m:
     int 21h
     cmp al,13
     je cicl1  
-    mov cx,10
+    mov cx, 10
+
 ;vvod strany
 cicl1:
+    xor ax,ax
     lea dx,new_line
     mov ah, 9
     int 21h   
@@ -84,32 +89,45 @@ cicl1:
 c1:
     mov ah, 01h
     int 21h
-    cmp ax,13
+    cmp al,13
     je c2
     mov strany[si], al
     inc si
     jmp c1
+
 ;vvod naselenia    
-c2:  
+c2:
+    mov strany[si], '$'
+    inc si
+
     lea dx,new_line
     mov ah, 9
     int 21h
-    
     lea dx,msg22
     mov ah, 9
     int 21h
-    
 zanovo:
     mov ah, 01h
     int 21h
     cmp al,13
-    je end
-    
-    mov bl, al
-    jne zanovo
-    
-    loop cicl1 
-end:            
+    je end1
+    sub al, 48
+    xor ah, ah
+    xor bh, bh
+    mov ax, bx
+    mov ax, temp
+    mul tmp10
+    add ax, bx
+    mov temp, ax
+    jmp zanovo
+end1:
+    xor si, si
+    mov naselenie[si], temp
+    inc si
+    inc si
+    mov naselenie[si], ' '
+    inc si
+    loop cicl1          
     ret                 
 endp
 
@@ -165,7 +183,7 @@ menu2 proc
     rep movsb
     
     lea si, nas1
-    lea di, nasel
+    lea di, naselenie
     mov cx, 20
     rep movsw
      
@@ -178,8 +196,6 @@ start:
     mov es, ax
     
     xor ax,ax
-    
-    call menu2
         
     lea dx, text1
     mov ah, 9
@@ -213,8 +229,11 @@ start:
     
 m1:
     call menu1
-    
-    
+    lea dx, new_line
+    mov ah, 9
+    int 21h
+    mov ax, naselenie[0]
+    call print_ax
     mov ax, 4c00h
     int 21h    
 ends
