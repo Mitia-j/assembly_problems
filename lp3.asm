@@ -73,10 +73,11 @@ menu1 proc
 m:  
     mov ah, 01h
     int 21h
-    cmp al,13
-    je cicl1  
+    cmp al, 13
+    je c0  
     mov cx, 10
-
+c0:
+    mov cx, 1
 ;vvod strany
 cicl1:
     xor ax,ax
@@ -122,10 +123,11 @@ zanovo:
     jmp zanovo
 end1:
     xor si, si
-    mov naselenie[si], temp
+    mov ax, temp
+    mov naselenie [si], ax
     inc si
     inc si
-    mov naselenie[si], ' '
+    mov naselenie [si], ' '
     inc si
     loop cicl1          
     ret                 
@@ -186,7 +188,6 @@ menu2 proc
     lea di, naselenie
     mov cx, 20
     rep movsw
-     
     ret
 endp
 
@@ -222,20 +223,27 @@ start:
     mov ah, 9
     int 21h 
     
-   ; mov ah, 1
-   ; int 21h
-   ; cmp al, '1'
-   ; je m1
-    
+    mov ah, 1
+    int 21h
+    cmp al, '1'
+    je m1
+    cmp al, '2'
+    je m2
+    cmp al, '3'
+    je m3
+    cmp al, '4'
+    je m4
 m1:
     call menu1
-    lea dx, new_line
-    mov ah, 9
-    int 21h
-    mov ax, naselenie[0]
-    call print_ax
-    mov ax, 4c00h
-    int 21h    
+    jmp start
+m2:
+    call menu2
+    jmp start
+m3:
+    call menu3
+    jmp start
+m4:
+    call menu4
+    jmp start
 ends
-
 end start 
