@@ -1,11 +1,12 @@
 data segment
     temp dw 0
     tmp10 db 10
-    len equ 400 
+    len equ 400
     msg db " sot. tys. jitelei$"
     msg21 db "Strana: $"
     msg22 db "Naselenie: $"
-    new_line db 0dh,0ah,'$'  
+    new_line db 0dh, 0ah, '$'
+    err db "Nedopustimoe znacenie"
     text db "Vvedite colicestvo stran: $"
     text1 db "Vvedite 1, chtoby vvesti dannye vruchnuiu$"
     text2 db "Vvedite 2, chtoby vvesti predopredelennye dannye$"
@@ -13,20 +14,21 @@ data segment
     text4 db "Vvedite 4, chtoby otobraziti dannye soglasno variantu$"
     strany db len dup(?)
     naselenie dw 40 dup(?)
-    s1 db "Moldova"
-    s2 db "Ucraine"
-    s3 db "Russia"
-    s4 db "Belarus"
-    s5 db "USA"
-    s6 db "Finland"
-    s7 db "Mexico"
-    s8 db "France"
-    s9 db "Germany"
-    s10 db "Switzerland"
-    nas1 dw 23, ' ', 377, ' ', 1438,' ', 91,' ', 3401, ' ',55,' ',1297,' ',682,' ',832,' ',88,' '
+    s1 db "Moldova            $"
+    s2 db "Ucraine            $"
+    s3 db "Russia             $"
+    s4 db "Belarus            $"
+    s5 db "USA                $"
+    s6 db "Finland            $"
+    s7 db "Mexico             $"
+    s8 db "France             $"
+    s9 db "Germany            $"
+    s10 db "Switzerland        $"
+    nas1 dw 23, 377, 1438, 91, 3401, 55,1297,682,832,88
+;nas1 dw "23$","377$","1438$","91$","3401$","55$","1297$","682$","832$","88$"
 ends
 stack segment
-    dw   128  dup(0)
+    dw 128 dup(0)
 ends
 code segment
     print_ax proc
@@ -57,10 +59,12 @@ code segment
     endp           
     
 menu1 proc
-    lea dx, text
-    mov ah, 9
+    lea dx, new_line
+    mov ah, 9h
     int 21h
-
+    lea dx, text
+    mov ah, 9h
+    int 21h
 ;vvod colicestva stran    
     mov ah, 01h
     int 21h
@@ -129,65 +133,113 @@ end1:
     inc si
     mov naselenie [si], ' '
     inc si
-    loop cicl1          
+    loop cicl1
+
+    lea dx, new_line
+    mov ah, 9h
+    int 21h          
     ret                 
 endp
 
 menu2 proc
+    xor si, si
     lea si, s1
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s2
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s3
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s4
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s5
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s6
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s7
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s8
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s9
     lea di, strany
     mov cx, 20
     rep movsb
-    
+    inc si
     lea si, s10
     lea di, strany
     mov cx, 20
     rep movsb
     
+    xor si, si
     lea si, nas1
     lea di, naselenie
     mov cx, 20
     rep movsw
+    
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
+    ret
+endp
+
+menu3 proc
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
+    xor si, si
+    mov cx, 10
+cicl3:
+    lea dx, strany
+    mov ah, 9
+    int 21h
+    mov ax, naselenie[si]
+    call print_ax 
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
+    inc si
+    loop cicl3
+
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
+    ret
+    inc si
+endp
+
+menu4 proc
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
+
+    ;cmp naselenie [si], 100
+
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
     ret
 endp
 
@@ -222,7 +274,6 @@ start:
     lea dx, new_line
     mov ah, 9
     int 21h 
-    
     mov ah, 1
     int 21h
     cmp al, '1'
@@ -233,6 +284,7 @@ start:
     je m3
     cmp al, '4'
     je m4
+    jmp error
 m1:
     call menu1
     jmp start
@@ -245,5 +297,12 @@ m3:
 m4:
     call menu4
     jmp start
+error:
+    lea dx, err
+    mov ah, 9
+    int 21h
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
 ends
 end start 
