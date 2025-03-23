@@ -133,6 +133,7 @@ end1:
     inc si
     mov naselenie [si], ' '
     inc si
+    inc si
     loop cicl1
 
     lea dx, new_line
@@ -144,59 +145,59 @@ endp
 menu2 proc
     xor si, si
     lea si, s1
-    lea di, strany
-    mov cx, 20
+    mov di, offset strany
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s2
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s3
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s4
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s5
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s6
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s7
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s8
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s9
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
-    inc si
+
     lea si, s10
-    lea di, strany
-    mov cx, 20
+    add di, 20
+    mov cx,  20
     rep movsb
     
     xor si, si
     lea si, nas1
     lea di, naselenie
-    mov cx, 20
+    mov cx, 10
     rep movsw
     
     lea dx, new_line
@@ -209,10 +210,12 @@ menu3 proc
     lea dx, new_line
     mov ah, 9h
     int 21h
+
     xor si, si
+    xor di, di
     mov cx, 10
 cicl3:
-    lea dx, strany
+    lea dx, strany[di]
     mov ah, 9
     int 21h
     mov ax, naselenie[si]
@@ -220,7 +223,9 @@ cicl3:
     lea dx, new_line
     mov ah, 9h
     int 21h
-    inc si
+    
+    add si, 2
+    add di, 20
     loop cicl3
 
     lea dx, new_line
