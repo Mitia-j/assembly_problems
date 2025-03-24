@@ -238,12 +238,38 @@ cicl3:
 endp
 
 menu4 proc
+    xor si,si
+    xor di,di
     lea dx, new_line
     mov ah, 9h
     int 21h
+    loop
+cicl4:
+    cmp naselenie [si], 100
+    jz end4
+    jb show
+    jnbe ccc
+show:
+    lea dx, strany[di]
+    mov ah, 9
+    int 21h
+    mov ax, naselenie[si]
+    call print_ax
+    lea dx, msg
+    mov ah,9
+    int 21h
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
+    add si, 2
+    add di, 40
+    jmp cicl4
 
-    ;cmp naselenie [si], 100
-
+ccc:
+    add si, 2
+    add di, 40
+    jmp cicl4
+end4:
     lea dx, new_line
     mov ah, 9h
     int 21h
