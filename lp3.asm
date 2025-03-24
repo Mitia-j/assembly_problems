@@ -219,20 +219,22 @@ cicl3:
     mov ah, 9
     int 21h
     mov ax, naselenie[si]
-    call print_ax 
+    call print_ax
+    lea dx, msg
+    mov ah,9
+    int 21h
     lea dx, new_line
     mov ah, 9h
     int 21h
     
     add si, 2
-    add di, 20
+    add di, 40
     loop cicl3
 
     lea dx, new_line
     mov ah, 9h
     int 21h
     ret
-    inc si
 endp
 
 menu4 proc
