@@ -2,11 +2,12 @@ data segment
     temp dw 0
     tmp10 db 10
     len equ 400
+    n dw 10
     msg db " sot. tys. jitelei$"
     msg21 db "Strana: $"
     msg22 db "Naselenie: $"
     new_line db 0dh, 0ah, '$'
-    err db "Nedopustimoe znacenie"
+    err db "Nedopustimoe znacenie$"
     text db "Vvedite colicestvo stran: $"
     text1 db "Vvedite 1, chtoby vvesti dannye vruchnuiu$"
     text2 db "Vvedite 2, chtoby vvesti predopredelennye dannye$"
@@ -73,6 +74,7 @@ menu1 proc
     sub al, 48
     xor ah,ah  
     mov cx, ax
+    add n, ax
     jmp cicl1
 m:  
     mov ah, 01h
@@ -80,8 +82,11 @@ m:
     cmp al, 13
     je c0  
     mov cx, 10
+    add n, 10
+    jmp cicl1
 c0:
     mov cx, 1
+    add n, 1
 ;vvod strany
 cicl1:
     xor ax,ax
@@ -243,10 +248,10 @@ menu4 proc
     lea dx, new_line
     mov ah, 9h
     int 21h
-    loop
+
+    mov cx, n
 cicl4:
     cmp naselenie [si], 100
-    jz end4
     jb show
     jnbe ccc
 show:
@@ -263,13 +268,13 @@ show:
     int 21h
     add si, 2
     add di, 40
-    jmp cicl4
+    jmp end4
 
 ccc:
     add si, 2
     add di, 40
-    jmp cicl4
 end4:
+    loop cicl4
     lea dx, new_line
     mov ah, 9h
     int 21h
@@ -331,6 +336,9 @@ m4:
     call menu4
     jmp start
 error:
+    lea dx, new_line
+    mov ah, 9h
+    int 21h
     lea dx, err
     mov ah, 9
     int 21h
