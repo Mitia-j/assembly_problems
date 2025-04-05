@@ -3,6 +3,8 @@ data segment
     tmp10 db 10
     len equ 400
     n dw 10
+    cons dw ?
+    conn dw ?
     msg db " sot. tys. jitelei$"
     msg21 db "Strana: $"
     msg22 db "Naselenie: $"
@@ -26,7 +28,6 @@ data segment
     s9 db "Germany            $"
     s10 db "Switzerland        $"
     nas1 dw 23, 377, 1438, 91, 3401, 55,1297,682,832,88
-;nas1 dw "23$","377$","1438$","91$","3401$","55$","1297$","682$","832$","88$"
 ends
 stack segment
     dw 128 dup(0)
@@ -90,7 +91,7 @@ c0:
 ;vvod strany
 cicl1:
     xor ax,ax
-    lea dx,new_line
+    lea dx, new_line
     mov ah, 9
     int 21h   
     lea dx, msg21
@@ -123,8 +124,8 @@ zanovo:
     je end1
     sub al, 48
     xor ah, ah
-    xor bh, bh
-    mov ax, bx
+    xor bx, bx
+    mov bx, ax
     mov ax, temp
     mul tmp10
     add ax, bx
@@ -134,11 +135,7 @@ end1:
     xor si, si
     mov ax, temp
     mov naselenie [si], ax
-    inc si
-    inc si
-    mov naselenie [si], ' '
-    inc si
-    inc si
+    add si, 2
     loop cicl1
 
     lea dx, new_line
@@ -199,11 +196,14 @@ menu2 proc
     mov cx,  20
     rep movsb
     
+    mov cons, di
+    
     xor si, si
     lea si, nas1
     lea di, naselenie
     mov cx, 10
     rep movsw
+    mov conn, si
     
     lea dx, new_line
     mov ah, 9h
@@ -269,7 +269,7 @@ show:
     add si, 2
     add di, 40
     jmp end4
-
+    
 ccc:
     add si, 2
     add di, 40
