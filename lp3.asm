@@ -2,9 +2,11 @@ data segment
     temp dw 0
     tmp10 db 10
     len equ 400
-    n dw 10
-    cons dw ?
-    conn dw ?
+    n dw 0
+    ncx dw ?
+    cons dw 0
+    conn dw 0
+    space db " $"
     msg db " sot. tys. jitelei$"
     msg21 db "Strana: $"
     msg22 db "Naselenie: $"
@@ -90,6 +92,7 @@ c0:
     add n, 1
 ;vvod strany
 cicl1:
+    mov ncx, cx
     xor ax,ax
     lea dx, new_line
     mov ah, 9
@@ -97,20 +100,25 @@ cicl1:
     lea dx, msg21
     mov ah, 9
     int 21h
+    mov di, cons
 c1:
     mov ah, 01h
     int 21h
     cmp al,13
     je c2
-    mov strany[si], al
-    inc si
+    
+    mov strany[di], al
+    inc di
     jmp c1
 
 ;vvod naselenia    
 c2:
-    mov strany[si], '$'
-    inc si
-
+    lea si, space
+    lea di, strany[di]
+    mov cx,  2
+    rep movsb
+    inc di
+    mov cx, ncx
     lea dx,new_line
     mov ah, 9
     int 21h
@@ -132,8 +140,8 @@ zanovo:
     mov temp, ax
     jmp zanovo
 end1:
-    xor si, si
     mov ax, temp
+    mov si, conn
     mov naselenie [si], ax
     add si, 2
     loop cicl1
@@ -145,7 +153,7 @@ end1:
 endp
 
 menu2 proc
-    xor si, si
+    mov si, cons
     lea si, s1
     mov di, offset strany
     mov cx,  20
